@@ -1,0 +1,15 @@
+@import "tailwindcss";
+
+@theme {
+  --font-bakersville: "Baskervville", serif;
+}
+@font-face {
+  font-family: "Baskervville";
+  src: url("/frontend/src/assets/Baskervville/Baskervville-VariableFont_wght.ttf")
+    format("truetype");
+  font-weight: 100 900; /* variable font range */
+  font-style: normal;
+}
+/* Masonry helpers */
+/* Pinterest-style masonry using column-width (more natural than column-count) */
+
