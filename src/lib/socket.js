@@ -1,3 +1,4 @@
+// socket.js
 // Singleton Socket.IO client with safe named exports
 // Works with: import { connectSocket, getSocket, disconnectSocket } from "@/lib/socket"
 
@@ -13,21 +14,22 @@ let socket = null;
 export const connectSocket = (token) => {
   if (socket && socket.connected) return socket;
 
-  // Prefer env, else same-origin (handy in dev behind a proxy)
+  // ✅ Use env in dev, fallback to backend URL in production
   const URL =
     import.meta.env.VITE_SOCKET_URL ||
-    `${window.location.protocol}//${window.location.host}`;
+    "https://skillmint-backend-bla3.onrender.com";
 
   socket = io(URL, {
-    transports: ["websocket"],      // fast & avoids long-poll bugs
+    transports: ["websocket"],      // prefer websocket
     autoConnect: true,
     reconnection: true,
     reconnectionAttempts: 10,
     reconnectionDelay: 500,
+    withCredentials: true,          // important for CORS cookies/auth
     auth: token ? { token } : undefined,
   });
 
-  // --- Optional: minimal debug logs (remove if noisy) ---
+  // --- Debug logs ---
   socket.on("connect", () => console.info("[socket] connected", socket.id));
   socket.on("connect_error", (err) =>
     console.warn("[socket] connect_error:", err?.message || err)
