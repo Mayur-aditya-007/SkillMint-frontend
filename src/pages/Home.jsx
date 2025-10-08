@@ -6,16 +6,15 @@ import LatestCoursesSidebar from "../components/LatestCoursesSidebar";
 import FeatureCards from "../components/FeatureCards";
 import CommunityHighlights from "../components/CommunityHighlights";
 import { UserContext } from "../context/UserContext";
-import { useNavigate } from "react-router-dom";           // ⬅️ added
-import { Lightbulb } from "lucide-react";                 // ⬅️ added
+import { useNavigate } from "react-router-dom";
+import { Lightbulb } from "lucide-react";
 
 const API = import.meta.env.VITE_BASE_URL || "";
 
-// neon FAB style
 const glowBtn =
   "inline-flex items-center justify-center p-3 rounded-full " +
   "bg-gradient-to-r from-cyan-500 via-fuchsia-500 to-violet-600 " +
-  "shadow-[0_0_20px_rgba(99,102,241,0.45)] hover:shadow-[0_0_35px_rgba(99,102,241,0.75)] " +
+  "shadow-[0_0_15px_rgba(99,102,241,0.45)] hover:shadow-[0_0_25px_rgba(99,102,241,0.75)] " +
   "text-white transition transform hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-cyan-300/60";
 
 const latestCourses = [
@@ -41,32 +40,23 @@ export default function Home() {
   const { user } = useContext(UserContext);
   const [enrolled, setEnrolled] = useState([]);
   const [loading, setLoading] = useState(true);
-  const navigate = useNavigate();                         // ⬅️ added
+  const navigate = useNavigate();
 
   useEffect(() => {
     (async () => {
       try {
         const token = localStorage.getItem("token");
-        // Add ts to bypass caches and explicitly set no-store
         const url = `${API}/api/enrollments?ts=${Date.now()}`;
-        console.log("[Home] FETCH →", url, "token?", !!token);
-
         const res = await fetch(url, {
           method: "GET",
           cache: "no-store",
           headers: {
             "Content-Type": "application/json",
             ...(token ? { Authorization: `Bearer ${token}` } : {}),
-            "Cache-Control": "no-cache",
-            Pragma: "no-cache",
           },
           credentials: "include",
         });
-
-        console.log("[Home] GET /api/enrollments status:", res.status);
         const data = await res.json().catch(() => []);
-        console.log("[Home] enrollments payload:", data);
-
         setEnrolled(Array.isArray(data) ? data : []);
       } catch (e) {
         console.error("Failed to load enrollments:", e);
@@ -78,31 +68,30 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="min-h-screen w-full relative bg-gray-900">
+    <div className="min-h-screen w-full relative bg-gray-900 text-white">
       <Navbar user={user} />
       <HeroBanner />
 
-      <div className="relative z-10 flex flex-col md:flex-row px-6 md:px-20 mt-10 gap-8">
-        <LatestCoursesSidebar latestCourses={latestCourses} />
-        <main className="flex-1 flex flex-col gap-12">
-          {/* Renders whatever the backend returns */}
+      <div className="relative z-10 flex flex-col md:flex-row px-4 md:px-20 mt-6 md:mt-10 gap-6 md:gap-8">
+        <LatestCoursesSidebar latestCourses={latestCourses} className="w-full md:w-1/4" />
+        <main className="flex-1 flex flex-col gap-8 md:gap-12">
           <EnrolledCourses courses={enrolled} loading={loading} />
           <FeatureCards cards={featureCards} />
           <CommunityHighlights highlights={communityHighlights} />
         </main>
       </div>
 
-      {/* 🔮 Glowing neon lightbulb FAB → Advanced Learning */}
+      {/* Glowing neon FAB */}
       <button
         onClick={() => navigate("/advanced-learning")}
         title="Go to Advanced Learning"
-        className={`fixed right-5 bottom-5 z-50 ${glowBtn}`}
+        className={`fixed right-4 md:right-5 bottom-4 md:bottom-5 z-50 ${glowBtn}`}
         aria-label="Advanced Learning"
       >
-        <Lightbulb className="w-6 h-6" />
+        <Lightbulb className="w-5 h-5 md:w-6 md:h-6" />
       </button>
 
-      <footer className="relative z-10 bg-black/70 text-white py-6 px-6 md:px-20 text-center mt-16">
+      <footer className="relative z-10 bg-black/70 text-white py-4 md:py-6 px-4 md:px-20 text-center mt-10 md:mt-16 text-sm md:text-base">
         &copy; 2025 Skill Mint. All rights reserved.
       </footer>
     </div>
