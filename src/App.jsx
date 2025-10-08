@@ -1,9 +1,8 @@
 // src/App.jsx
-import React, { Suspense, useEffect, useState, useContext } from "react";
-import { Route, Routes, Navigate } from "react-router-dom";
-import LoadingSpinner from "./components/LoadingSpinner"; // Spinner component
-import heroVideo from "./assets/front.mp4"; // Adjust path to your hero video
-import { UserContext } from "./context/UserContext";
+import React, { Suspense, useState, useEffect } from "react";
+import { Routes, Route, Navigate } from "react-router-dom";
+import LoadingSpinner from "./components/LoadingSpinner";
+import heroVideo from "./assets/front.mp4";
 
 // Lazy-loaded public pages
 const Start = React.lazy(() => import("./pages/Start"));
@@ -32,7 +31,7 @@ import WebLLMChatModal from "./components/WebLLMChatModal";
 import ReviewModal from "./components/ReviewModal";
 import ErrorBoundary from "./components/ErrorBoundary";
 
-// Loader that preloads the hero video
+// Lightweight video loader
 const VideoLoader = ({ videoSrc, onLoaded }) => {
   const [progress, setProgress] = useState(0);
 
@@ -42,17 +41,16 @@ const VideoLoader = ({ videoSrc, onLoaded }) => {
     video.preload = "auto";
     video.oncanplaythrough = () => {
       setProgress(100);
-      setTimeout(onLoaded, 500); // small delay for smooth transition
+      setTimeout(onLoaded, 300);
     };
 
-    // fake progress bar
     let fakeProgress = 0;
     const interval = setInterval(() => {
       if (fakeProgress < 90) {
         fakeProgress += Math.random() * 10;
         setProgress(fakeProgress);
       }
-    }, 300);
+    }, 200);
 
     return () => clearInterval(interval);
   }, [videoSrc, onLoaded]);
@@ -84,25 +82,17 @@ function ProtectedWithMenu({ children }) {
         rememberPosition
         storageKey="sphereQuadMenu:pos"
         onAskAI={() => setOpenWebLLM(true)}
-        onQuickTerminal={() => window.location.href = "/QuickTerminal"}
+        onQuickTerminal={() => window.location.assign("/QuickTerminal")}
         onReview={() => setOpenReview(true)}
-        onQuickNotes={() =>
-          window.open("https://keep.google.com/", "_blank", "noopener,noreferrer")
-        }
+        onQuickNotes={() => window.open("https://keep.google.com/", "_blank")}
       />
       <WebLLMChatModal open={openWebLLM} onClose={() => setOpenWebLLM(false)} />
-      <ReviewModal
-        open={openReview}
-        onClose={() => setOpenReview(false)}
-        onSubmitted={() => console.log("Review saved")}
-      />
+      <ReviewModal open={openReview} onClose={() => setOpenReview(false)} />
     </UserProtectWrapper>
   );
 }
 
-/**
- * Preload important public pages during idle time
- */
+// Preload public pages in idle time
 function usePreloadPublicPages() {
   useEffect(() => {
     const preload = () => {
@@ -123,15 +113,12 @@ function usePreloadPublicPages() {
   }, []);
 }
 
-// Main App
 function App() {
-  const { user, bootstrapped } = useContext(UserContext);
   const [videoLoaded, setVideoLoaded] = useState(false);
-
   usePreloadPublicPages();
 
-  // Show loader until UserContext is bootstrapped or hero video is ready
-  if (!bootstrapped || !videoLoaded) {
+  // Show only video loader initially
+  if (!videoLoaded) {
     return <VideoLoader videoSrc={heroVideo} onLoaded={() => setVideoLoaded(true)} />;
   }
 
@@ -148,130 +135,16 @@ function App() {
         <Route path="/user/logout" element={<UserLogout />} />
 
         {/* Protected pages */}
-        <Route
-          path="/home"
-          element={
-            user ? (
-              <ProtectedWithMenu>
-                <Home />
-              </ProtectedWithMenu>
-            ) : (
-              <Navigate to="/login" replace />
-            )
-          }
-        />
-        <Route
-          path="/explore"
-          element={
-            user ? (
-              <ProtectedWithMenu>
-                <Explore />
-              </ProtectedWithMenu>
-            ) : (
-              <Navigate to="/login" replace />
-            )
-          }
-        />
-        <Route
-          path="/connect"
-          element={
-            user ? (
-              <ProtectedWithMenu>
-                <Connect />
-              </ProtectedWithMenu>
-            ) : (
-              <Navigate to="/login" replace />
-            )
-          }
-        />
-        <Route
-          path="/courses/:id"
-          element={
-            user ? (
-              <ProtectedWithMenu>
-                <Courses />
-              </ProtectedWithMenu>
-            ) : (
-              <Navigate to="/login" replace />
-            )
-          }
-        />
-        <Route
-          path="/messages"
-          element={
-            user ? (
-              <ProtectedWithMenu>
-                <Messages />
-              </ProtectedWithMenu>
-            ) : (
-              <Navigate to="/login" replace />
-            )
-          }
-        />
-        <Route
-          path="/myprofile"
-          element={
-            user ? (
-              <ProtectedWithMenu>
-                <MyProfile />
-              </ProtectedWithMenu>
-            ) : (
-              <Navigate to="/login" replace />
-            )
-          }
-        />
-        <Route
-          path="/users/:id"
-          element={
-            user ? (
-              <ProtectedWithMenu>
-                <UserProfile />
-              </ProtectedWithMenu>
-            ) : (
-              <Navigate to="/login" replace />
-            )
-          }
-        />
-        <Route
-          path="/QuickTerminal"
-          element={
-            user ? (
-              <ProtectedWithMenu>
-                <QuickTerminal />
-              </ProtectedWithMenu>
-            ) : (
-              <Navigate to="/login" replace />
-            )
-          }
-        />
-        <Route
-          path="/advanced-learning"
-          element={
-            user ? (
-              <ProtectedWithMenu>
-                <ErrorBoundary>
-                  <AdvancedLearning />
-                </ErrorBoundary>
-              </ProtectedWithMenu>
-            ) : (
-              <Navigate to="/login" replace />
-            )
-          }
-        />
-        <Route
-          path="/advanced-learning/:courseId"
-          element={
-            user ? (
-              <ProtectedWithMenu>
-                <ErrorBoundary>
-                  <AdvancedLearning />
-                </ErrorBoundary>
-              </ProtectedWithMenu>
-            ) : (
-              <Navigate to="/login" replace />
-            )
-          }
-        />
+        <Route path="/home" element={<ProtectedWithMenu><Home /></ProtectedWithMenu>} />
+        <Route path="/explore" element={<ProtectedWithMenu><Explore /></ProtectedWithMenu>} />
+        <Route path="/connect" element={<ProtectedWithMenu><Connect /></ProtectedWithMenu>} />
+        <Route path="/courses/:id" element={<ProtectedWithMenu><Courses /></ProtectedWithMenu>} />
+        <Route path="/messages" element={<ProtectedWithMenu><Messages /></ProtectedWithMenu>} />
+        <Route path="/myprofile" element={<ProtectedWithMenu><MyProfile /></ProtectedWithMenu>} />
+        <Route path="/users/:id" element={<ProtectedWithMenu><UserProfile /></ProtectedWithMenu>} />
+        <Route path="/QuickTerminal" element={<ProtectedWithMenu><QuickTerminal /></ProtectedWithMenu>} />
+        <Route path="/advanced-learning" element={<ProtectedWithMenu><ErrorBoundary><AdvancedLearning /></ErrorBoundary></ProtectedWithMenu>} />
+        <Route path="/advanced-learning/:courseId" element={<ProtectedWithMenu><ErrorBoundary><AdvancedLearning /></ErrorBoundary></ProtectedWithMenu>} />
 
         {/* Fallback */}
         <Route path="*" element={<Navigate to="/" replace />} />
