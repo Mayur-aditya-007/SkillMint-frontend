@@ -33,7 +33,7 @@ export default function Start() {
         <div className="container mx-auto flex justify-between items-center p-4">
           <Link to="/" className="flex items-center gap-2">
             <img src={SkillMintLogo} alt="SkillMint" className="h-10 w-10 rounded-full" />
-            <span className="text-2xl font-bold font-baskervville">SkillMint</span>
+            <span className="text-2xl font-bold font-Baskervville">SkillMint</span>
           </Link>
 
           <div className="hidden md:flex gap-6 items-center">
