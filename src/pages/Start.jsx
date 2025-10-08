@@ -61,15 +61,15 @@ export default function Start() {
       </nav>
 
       {/* Section 1: Fullscreen Video with Typewriter */}
-      <section className="relative w-full h-screen">
-        <video
-          className="absolute inset-0 w-full h-full object-cover"
+     <video
+       className="absolute inset-0 w-full h-full object-cover"
           autoPlay
-          loop
-          muted
-          poster="/assets/front-poster.webp"
-          preload="metadata"
-        >
+           loop
+            muted
+              poster="/assets/front-poster.webp"
+             preload="auto"
+           >
+
           <source src={frontvideo} type="video/mp4" />
         </video>
         <div className="absolute inset-0 bg-black/40"></div>
