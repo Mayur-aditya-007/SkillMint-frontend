@@ -10,9 +10,9 @@ const FeaturesSection = lazy(() => import("../components/FeaturesSection.jsx"));
 
 export default function Start() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [videoLoaded, setVideoLoaded] = useState(false);
   const [displayText, setDisplayText] = useState("");
   const text = "Experience Learning Like Never Before";
+  const [videoLoaded, setVideoLoaded] = useState(false);
 
   // Typewriter effect
   useEffect(() => {
@@ -35,6 +35,7 @@ export default function Start() {
 
   return (
     <div className="flex flex-col min-h-screen">
+
       {/* Navbar */}
       <nav className="bg-gray-900 text-white shadow-lg sticky top-0 z-50">
         <div className="container mx-auto flex justify-between items-center p-4">
@@ -53,6 +54,7 @@ export default function Start() {
             <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="text-2xl">☰</button>
           </div>
         </div>
+
         {mobileMenuOpen && (
           <div className="md:hidden bg-gray-800 p-4 flex flex-col gap-3">
             <Link to="/about" className="hover:text-green-500 transition">About</Link>
@@ -64,7 +66,7 @@ export default function Start() {
         )}
       </nav>
 
-      {/* Hero Section */}
+      {/* Section 1: Hero Video + Typewriter */}
       <section className="relative w-full h-screen">
         {!videoLoaded && (
           <div className="absolute inset-0 bg-black flex items-center justify-center z-10">
@@ -83,6 +85,7 @@ export default function Start() {
         </video>
 
         <div className="absolute inset-0 bg-black/40"></div>
+
         <div className="absolute inset-y-0 left-0 flex items-center justify-start pl-16">
           <div className="bg-black/60 p-8 rounded-2xl max-w-lg text-left">
             <h1 className="text-4xl md:text-5xl font-extrabold text-green-400 mb-4">
@@ -94,10 +97,50 @@ export default function Start() {
         </div>
       </section>
 
-      {/* Lazy-loaded Features */}
+      {/* Section 2: Lazy-loaded Features */}
       <Suspense fallback={<LoadingSpinner message="Loading features..." />}>
         <FeaturesSection />
       </Suspense>
+
+      {/* Section 3: Parallax Banner */}
+      <section
+        className="relative w-full h-screen bg-fixed bg-cover bg-center"
+        style={{ backgroundImage: 'url("https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=1600&q=80")' }}
+      >
+        <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
+          <h2 className="text-4xl md:text-5xl text-white font-bold px-4 text-center">
+            Innovative Courses for Future Leaders
+          </h2>
+        </div>
+      </section>
+
+      {/* Section 4: Hero with Animated Text */}
+      <section className="relative w-full h-screen bg-gradient-to-r from-blue-500 to-indigo-700 text-white flex items-center justify-center">
+        <div
+          className="absolute inset-0 bg-cover bg-center"
+          style={{ backgroundImage: 'url("https://images.unsplash.com/photo-1506748686210-2d5e7b2c6c1b?auto=format&fit=crop&w=1600&q=80")' }}
+        ></div>
+        <div className="relative z-10 text-center px-4">
+          <h1 className="text-5xl md:text-6xl font-extrabold mb-4 animate-pulse">
+            Unlock Your Potential with SkillMint
+          </h1>
+          <p className="text-lg md:text-2xl mb-6 animate-fadeIn">
+            Master in-demand skills and advance your career.
+          </p>
+          <Link to="/signup" className="px-6 py-3 bg-green-500 rounded-full text-lg font-semibold hover:bg-green-600 transition-all duration-300">
+            Get Started
+          </Link>
+        </div>
+      </section>
+
+      {/* Section 5: Optional CTA / Promo */}
+      <section className="relative w-full py-24 bg-gray-900 text-white flex flex-col items-center justify-center">
+        <h2 className="text-3xl md:text-4xl font-bold mb-4 text-center">Join Thousands of Learners Today</h2>
+        <p className="text-lg md:text-xl text-gray-300 mb-6 text-center">Take your skills to the next level with SkillMint courses.</p>
+        <Link to="/signup" className="px-6 py-3 bg-green-500 rounded-full text-lg font-semibold hover:bg-green-600 transition-all duration-300">
+          Sign Up Now
+        </Link>
+      </section>
 
       {/* Footer */}
       <Footer />
