@@ -1,5 +1,5 @@
 // src/components/Navbar.jsx
-import React, { useContext, useState, useEffect, useRef } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import ProfileDropdown from "./ProfileDropdown";
 import NotificationsBell from "./NotificationsBell";
@@ -20,25 +20,27 @@ export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const mobileRef = useRef(null);
 
-  // close mobile nav when route changes
+  // Close mobile menu on route change
   useEffect(() => {
     setMobileOpen(false);
   }, [location.pathname]);
 
-  // close on outside click or ESC
+  // Close on outside click / escape
   useEffect(() => {
-    const handle = (e) => {
-      if (e.key === "Escape") setMobileOpen(false);
-      if (mobileRef.current && !mobileRef.current.contains(e.target)) {
-        // clicking outside will close only when open
-        if (mobileOpen) setMobileOpen(false);
+    const handleOutside = (e) => {
+      if (e.key === "Escape") {
+        setMobileOpen(false);
+        return;
       }
+      if (!mobileRef.current) return;
+      if (!mobileOpen) return;
+      if (!mobileRef.current.contains(e.target)) setMobileOpen(false);
     };
-    document.addEventListener("keydown", handle);
-    document.addEventListener("mousedown", handle);
+    document.addEventListener("mousedown", handleOutside);
+    document.addEventListener("keydown", handleOutside);
     return () => {
-      document.removeEventListener("keydown", handle);
-      document.removeEventListener("mousedown", handle);
+      document.removeEventListener("mousedown", handleOutside);
+      document.removeEventListener("keydown", handleOutside);
     };
   }, [mobileOpen]);
 
@@ -49,11 +51,11 @@ export default function Navbar() {
         <div className="flex items-center gap-3">
           <Link to="/" className="flex items-center gap-2">
             <span className="sr-only">SkillMint Home</span>
-            <span className="text-xl md:text-2xl font-bold">Skill Mint</span>
+            <span className="text-lg md:text-2xl font-bold">Skill Mint</span>
           </Link>
         </div>
 
-        {/* Center: Desktop nav (hidden on small screens) */}
+        {/* Center: Desktop nav */}
         <div className="hidden md:flex items-center gap-6">
           {navItems.map((item) => {
             const active = location.pathname === item.path;
@@ -61,8 +63,8 @@ export default function Navbar() {
               <Link
                 key={item.name}
                 to={item.path}
-                className={`text-sm md:text-base font-medium hover:text-blue-400 transition ${
-                  active ? "text-blue-400" : "text-white"
+                className={`text-sm md:text-base font-medium transition ${
+                  active ? "text-blue-400" : "text-white hover:text-blue-300"
                 }`}
               >
                 {item.name}
@@ -71,14 +73,14 @@ export default function Navbar() {
           })}
         </div>
 
-        {/* Right: controls */}
+        {/* Right controls */}
         <div className="flex items-center gap-3">
-          {/* Notifications bell: visible on all sizes */}
+          {/* Notifications always visible */}
           <div className="flex items-center">
             <NotificationsBell />
           </div>
 
-          {/* Profile dropdown (desktop) */}
+          {/* Desktop profile */}
           <div className="hidden md:block">
             <ProfileDropdown user={userFromCtx} />
           </div>
@@ -90,7 +92,6 @@ export default function Navbar() {
             onClick={() => setMobileOpen((s) => !s)}
             className="md:hidden p-2 rounded hover:bg-white/10 transition"
           >
-            {/* simple hamburger / X icon */}
             <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor">
               {mobileOpen ? (
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
@@ -105,7 +106,7 @@ export default function Navbar() {
       {/* Mobile panel */}
       <div
         ref={mobileRef}
-        className={`md:hidden fixed inset-x-0 top-16 z-[8999] transform-gpu transition-all duration-300 ${
+        className={`md:hidden fixed inset-x-0 top-16 z-[8999] transform-gpu transition-all duration-250 ${
           mobileOpen ? "translate-y-0 opacity-100" : "-translate-y-4 opacity-0 pointer-events-none"
         }`}
         aria-hidden={!mobileOpen}
@@ -130,25 +131,7 @@ export default function Navbar() {
 
             <div className="border-t border-white/6 my-1" />
 
-            {/* Auth actions */}
-            <div className="flex flex-col gap-2">
-              <Link
-                to="/login"
-                className="w-full text-center px-4 py-2 rounded-md bg-green-500 hover:bg-green-600 transition font-semibold"
-              >
-                Login
-              </Link>
-              <Link
-                to="/signup"
-                className="w-full text-center px-4 py-2 rounded-md bg-white/10 hover:bg-white/20 transition font-semibold"
-              >
-                Sign up
-              </Link>
-            </div>
-
-            <div className="border-t border-white/6 my-1" />
-
-            {/* Mobile profile + notifications row */}
+            {/* Mobile profile row: uses ProfileDropdown (mobile-ready) and Notifications */}
             <div className="flex items-center justify-between gap-3">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-sm font-medium">
@@ -160,8 +143,10 @@ export default function Navbar() {
                 </div>
               </div>
 
-              <div>
+              <div className="flex items-center gap-2">
                 <NotificationsBell />
+                {/* Use same ProfileDropdown component for mobile (it will render bottom-sheet) */}
+                <ProfileDropdown user={userFromCtx} />
               </div>
             </div>
           </div>
