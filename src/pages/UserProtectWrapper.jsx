@@ -18,7 +18,7 @@ const UserProtectWrapper = ({ children }) => {
     const verifyToken = async () => {
       const token = localStorage.getItem("token");
       if (!token) {
-        navigate("/login");
+        navigate("/");
         return;
       }
 
