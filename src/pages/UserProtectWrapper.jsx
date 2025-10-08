@@ -6,6 +6,7 @@ import axios from "axios";
 // import your floating sphere + local chatbot modal
 import SphereQuadMenu from "../components/SphereQuadMenu";
 import WebLLMChatModal from "../components/WebLLMChatModal";
+import LoadingSpinner from "../components/LoadingSpinner";
 
 const UserProtectWrapper = ({ children }) => {
   const navigate = useNavigate();
