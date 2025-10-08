@@ -3,27 +3,26 @@ import { Link } from "react-router-dom";
 import Footer from "../components/Footer.jsx";
 import SkillMintLogo from "../assets/SkillMint.png";
 import frontvideo from "../assets/front.mp4";
-import LoadingSpinner from "../components/LoadingSpinner";
+import LoadingSpinner from "../components/LoadingSpinner.jsx";
 
 // Lazy load Features Section
-const FeaturesSection = lazy(() => import("../components/FeaturesSection"));
+const FeaturesSection = lazy(() => import("../components/FeaturesSection.jsx"));
 
 export default function Start() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [videoLoaded, setVideoLoaded] = useState(false);
   const [displayText, setDisplayText] = useState("");
   const text = "Experience Learning Like Never Before";
-
-  const [videoLoaded, setVideoLoaded] = useState(false);
 
   // Typewriter effect
   useEffect(() => {
     let index = 0;
-    const typeInterval = setInterval(() => {
+    const interval = setInterval(() => {
       setDisplayText((prev) => prev + text.charAt(index));
       index++;
-      if (index >= text.length) clearInterval(typeInterval);
+      if (index >= text.length) clearInterval(interval);
     }, 80);
-    return () => clearInterval(typeInterval);
+    return () => clearInterval(interval);
   }, []);
 
   // Preload hero video asynchronously
@@ -36,7 +35,6 @@ export default function Start() {
 
   return (
     <div className="flex flex-col min-h-screen">
-
       {/* Navbar */}
       <nav className="bg-gray-900 text-white shadow-lg sticky top-0 z-50">
         <div className="container mx-auto flex justify-between items-center p-4">
@@ -66,12 +64,11 @@ export default function Start() {
         )}
       </nav>
 
-      {/* Hero Section with async video */}
+      {/* Hero Section */}
       <section className="relative w-full h-screen">
-        {/* Poster background first */}
         {!videoLoaded && (
-          <div className="absolute inset-0 bg-black flex items-center justify-center">
-            <div className="w-12 h-12 border-4 border-white border-t-transparent rounded-full animate-spin"></div>
+          <div className="absolute inset-0 bg-black flex items-center justify-center z-10">
+            <LoadingSpinner size={48} message="Loading video..." />
           </div>
         )}
 
@@ -80,14 +77,12 @@ export default function Start() {
           autoPlay
           loop
           muted
-          poster="/assets/0001.jpg"
           preload="auto"
         >
           <source src={frontvideo} type="video/mp4" />
         </video>
 
         <div className="absolute inset-0 bg-black/40"></div>
-
         <div className="absolute inset-y-0 left-0 flex items-center justify-start pl-16">
           <div className="bg-black/60 p-8 rounded-2xl max-w-lg text-left">
             <h1 className="text-4xl md:text-5xl font-extrabold text-green-400 mb-4">
@@ -99,8 +94,8 @@ export default function Start() {
         </div>
       </section>
 
-      {/* Lazy-loaded Features Section */}
-      <Suspense fallback={<LoadingSpinner />}>
+      {/* Lazy-loaded Features */}
+      <Suspense fallback={<LoadingSpinner message="Loading features..." />}>
         <FeaturesSection />
       </Suspense>
 
@@ -109,4 +104,3 @@ export default function Start() {
     </div>
   );
 }
-
